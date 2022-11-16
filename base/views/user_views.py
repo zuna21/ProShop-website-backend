@@ -5,14 +5,10 @@ from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 from rest_framework import status
 
-from .products import products
-from .models import Product
-from .serializers import ProductSerializer, UserSerializer, UserSerializerWithToken
+from base.serializers import UserSerializer, UserSerializerWithToken
 
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
-
-# Create your views here.
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
@@ -45,7 +41,6 @@ def getUsers(request):
 @api_view(['POST'])
 def registerUser(request):
     data = request.data
-
     try:
         user = User.objects.create(
             first_name=data['name'],
@@ -58,17 +53,3 @@ def registerUser(request):
     except:
         message = {'detail': 'User with this email already exists'}
         return Response(message, status=status.HTTP_400_BAD_REQUEST)
-
-@api_view(['GET'])
-def getProducts(request):
-    products = Product.objects.all()
-    serializer = ProductSerializer(products, many=True)
-    return Response(serializer.data)
-
-
-@api_view(['GET'])
-def getProduct(request, pk):
-    product = Product.objects.get(_id=pk)
-    serializer = ProductSerializer(product, many=False)
-
-    return Response(serializer.data)
